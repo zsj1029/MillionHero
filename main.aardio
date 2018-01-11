@@ -19,9 +19,8 @@ console.setTitle("MillionDollar");
 var imgpath = "C:\screenshot\screenshot.png";
 var keypath = "C:\screenshot\token.txt";
 var api = "http://text.aliapi.hanvon.com/rt/ws/v1/ocr/text/recg?code=74e51a88-41ec-413e-b162-bd031fe0407e";
-var appcode = "9c993b36ecc94bcda0e143e81df93425";
+var appcode = "xxxxx";
 var bdorcapi = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
-var appId = "10672778";
 var apiKey = "QMC9Tp8ww8yjHDXI258uVOlM";
 var secretKey = "LOko3wu9ZbVXMUyribzxGkivkIf6SbMR";
 var token_url = "https://aip.baidubce.com/oauth/2.0/token";
@@ -195,6 +194,12 @@ var search = function(question){
 		i++;
 	}
 } 
+
+//关闭adb进程
+var proc = "adb.exe";
+for processEntry in process.each(proc) {
+	process.kill(processEntry.szExeFile)
+}
 
 get_auth();//获取百度token
 fsys.createDir("c:/screenshot/");
