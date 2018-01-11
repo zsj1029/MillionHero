@@ -14,6 +14,7 @@ import string.xml;
 import web.mshtml;
 import time.ole;
 import inet.url;
+import string.html;
 
 console.setTitle("MillionDollar");
 var imgpath = "C:\screenshot\screenshot.png";
@@ -100,9 +101,9 @@ var jieping = function(){
 var caijian = function(){
 	//80 250 550
 	var bitmap = gdip.bitmap(imgpath );
-	var bitmagNew = gdip.bitmap(920,400);
+	var bitmagNew = gdip.bitmap(920,1120);
 	var graphics = bitmagNew.getGraphics();
-	graphics.drawImageRectRect(bitmap,0,0,920,400,80,250,920,400)
+	graphics.drawImageRectRect(bitmap,0,0,920,1120,80,250,920,1120)
 	bitmagNew.save("C:\screenshot\screenshot_block.png")
 	//console.log("截取问题成功")
 	
@@ -125,16 +126,44 @@ var bdorc = function(){
 	var resp = web.json.parse(json);
 	//console.log(json);
 	var question = "";
+	var answer = {};
 	if(resp.words_result==null)
 	{
 		console.log("识别失败："+resp.result);
 		return null; 
 	}
+	var i = 1;
+	var num = resp.words_result_num;
 	for(key,val in resp.words_result){
-		question = question+""+val.words
+		if(num>4)
+		{
+			if(i<=2)
+			{
+				question = question+""+val.words
+			}else {
+				table.push(answer,val.words);
+			}
+		}else {
+			if(i==1)
+			{
+				question = question+""+val.words
+			}else {
+				table.push(answer,val.words);
+			}
+		}
+		i++;
 	}
 	console.log(question);
-	return question; 
+	//除去序号1.2.3.
+	for( i =1;12;1){
+		question = string.replace(question,string.concat(i,"."),"");
+	}
+	//console.dump(answer);
+	var obj = {
+		question = question;
+		answer = answer;
+	}
+	return obj; 
 }
 
 
@@ -175,24 +204,40 @@ var orcshibie = function(){
 	
 
 }
-var search = function(question){
-
-	//console.log(question);
+var search = function(obj){
+	question = obj.question;
+	answer = obj.answer
+	console.log("");
+	//console.dump(string.find(question,"不是"));
+	if(string.find(question,"不是")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
+	{
+		console.log("*此题可能是否定题，建议选统计次数最少的答案*");
+	}else {
+		console.log("*建议选统计次数最多的答案*");
+	}
+	
+	
 	question = inet.url.encode(question)
 	html = web.mshtml();
 	html.document.designMode = "on";
 	url = "https://www.baidu.com/s?wd="+question;
 	html.go(url);
-	qEle = html.queryEles(className = "c-abstract");
-	console.log("以下可能的答案：")
-	i = 0
-	for(key,val in qEle){
-		if(i>3)
-			break ;
-		console.log(" ")
-		console.log(val.innerText);
-		i++;
+	var content = html.html;
+	content = string.html.toText(content);
+	//console.log(content);
+	//qEle = html.queryEles(className = "c-abstract");
+	//console.log("");
+	//console.log(qEle[1].innerText);
+	console.log("");
+	console.log("统计答案出现次数：")
+	console.log("");
+
+	for(key,val in answer){
+		//console.log(val);
+		strlist = string.split(content,string.concat("<",val,">"));
+		console.log(string.concat(val," ",(#strlist-1),"个"));
 	}
+	
 } 
 
 
