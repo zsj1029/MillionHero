@@ -7,6 +7,8 @@
 > - 2018-01-11 汉王ORC太贵不够用，切换到百度云[文字识别](http://ai.baidu.com/docs#/OCR-API/top)，每天500次免费额度
 > - 2018-01-10 ORC采用阿里云汉王文字识别
 
+**百度ORC识别appkey改一下，人多500次也不够，如下图**
+![1.png](res/3.png)
 
 > 本程序参考了一下，最近比较火的跳一跳的原理
 1. 安卓手机调试模式
@@ -15,7 +17,7 @@
 4. ORC文字识别
 5. 调用百度，返回查询结果，平均时间不到3秒
 
-### 现隆重介绍一下实现的语言工具 [AARDIO](http://bbs.aardio.com/) 一位国内老程序员开发的语言。[介绍点这里](http://bbs.aardio.com/portal.php?mod=view&aid=5)
+- 现隆重介绍一下实现的语言工具 [AARDIO](http://bbs.aardio.com/) 一位国内老程序员开发的语言。[介绍点这里](http://bbs.aardio.com/portal.php?mod=view&aid=5)
 - 引用官方的介绍
 > aardio 专用于桌面软件快速开发，开发环境仅 6.5 MB, 绿色软件解压即用 -  无论个人或企业都可以永久免费使用本软件开发商用、或非商用的应用程序。使用aardio开发的软件不需要放置鸣谢链接、不需要声明使用aardio开发。 
 
