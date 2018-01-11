@@ -44,7 +44,7 @@ var to_auth = function(){
 	json = web.json.stringify(resp);
 	keyfile.write(json);
 	keyfile.close();
-	console.dump(resp);
+	//console.dump(resp);
 }
 
 
@@ -195,21 +195,30 @@ var search = function(question){
 	}
 } 
 
-//关闭adb进程
-var proc = "adb.exe";
-for processEntry in process.each(proc) {
-	process.kill(processEntry.szExeFile)
+
+var init = function(){
+	//关闭adb进程
+	var proc = "adb.exe";
+	for processEntry in process.each(proc) {
+		process.kill(processEntry.szExeFile)
+	}
+	fsys.createDir("c:/screenshot/");
+	get_auth();//获取百度token
+	
+	process.adb.killServer();
+	process.adb.startServer();
+	if( process.adb.getState() != "device" ){
+			console.log("请选连接安卓手机,并打开设置->开发者选项->USB调试模式" )
+			console.pause()
+			return ; 
+	}
+	console.log("设备串号",process.adb.getSerialno() )
+	console.log("按回车键开始识别问题..." );
 }
 
-get_auth();//获取百度token
-fsys.createDir("c:/screenshot/");
-process.adb.killServer();
-//process.adb.startServer();
-if( process.adb.getState() != "device" ){
-		console.log("请选连接安卓手机,并打开设置->开发者选项->USB调试模式" )
-}
-console.log("设备串号",process.adb.getSerialno() )
-console.log("按回车键开始识别问题..." );
+
+init();
+
 while(true){ 
 	if( console.kbHit() ){
 		var kb = console.kbRead();
@@ -235,4 +244,5 @@ while(true){
 		 
 	}
 }
+
 
