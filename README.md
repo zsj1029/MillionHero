@@ -26,7 +26,7 @@
 
 - 手机连接成功如上图显示，否则就去看看adb调试相关的连接知识，这里就不多做介绍
 
-![screenshot.png](res/screenshot.png =100)
+![screenshot.png](res/screenshot.png =100x)
 
 - 根据提示，当题目出现后，按下回车开始识别搜题
 
