@@ -237,6 +237,10 @@ var search = function(obj){
 		strlist = string.split(content,string.concat("<",val,">"));
 		console.log(string.concat(val," ",(#strlist-1),"个"));
 	}
+	qEle = html.queryEles(className = "c-abstract");
+	console.log("");
+	console.log("搜索返回：");
+	console.log(qEle[1].innerText);
 	
 } 
 
