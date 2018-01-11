@@ -27,7 +27,7 @@
 
 **使用方法如下**
 1. 开启usb调试模式安卓手机一部
-2. 安装ADB调试驱动 [下载]http://www.wmzhe.com/soft-39913.html
+2. 安装ADB调试驱动 [下载](http://www.wmzhe.com/soft-39913.html)
 3. 配置windows环境变量，把adb解压完整目录名加入PATH
 4. 双击运行MillionDollar.exe [下载](https://github.com/zsj1029/MillionHero/files/1621798/MillionDollar.zip)
 
