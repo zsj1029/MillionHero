@@ -13,7 +13,7 @@
 2. 截图
 3. 截取文字部分
 4. ORC文字识别
-5. 调用百度，返回查询结果
+5. 调用百度，返回查询结果，平均时间不到3秒
 
 - 现隆重介绍一下实现的语言工具 [AARDIO](http://bbs.aardio.com/) 一位国内老程序员开发的语言。[介绍点这里](http://bbs.aardio.com/portal.php?mod=view&aid=5)
 - 引用官方的介绍
@@ -43,3 +43,5 @@
 
 ![screenshot.png](res/alipay.png)
 - 吃水不忘挖井人，支付宝给个打赏，金额随意
+
+
