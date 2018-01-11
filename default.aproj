@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project ver="10" name="MillionDollar" libEmbed="true" icon="..." ui="console" output="MillionDollar.exe" CompanyName="上海理世机器人科技有限公司" FileDescription="MillionDollar" LegalCopyright="Copyright (C) 上海理世机器人科技有限公司 2018" ProductName="MillionDollar" InternalName="MillionDollar" FileVersion="0.0.0.03" ProductVersion="0.0.0.03" publishDir="/Publish/" dstrip="false">
+	<file name="main.aardio" path="main.aardio" comment="启动程序代码"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>

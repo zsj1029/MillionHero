@@ -1,0 +1,233 @@
+import console;
+import key;
+import process;
+import process.popen;
+import process.adb;
+import fsys;
+import fsys.file;
+import fsys.stream;
+import gdip;
+import web.json;
+import web.rest.client;
+import crypt.bin; 
+import string.xml;
+import web.mshtml;
+import time.ole;
+import inet.url;
+
+console.setTitle("MillionDollar");
+var imgpath = "C:\screenshot\screenshot.png";
+var keypath = "C:\screenshot\token.txt";
+var api = "http://text.aliapi.hanvon.com/rt/ws/v1/ocr/text/recg?code=74e51a88-41ec-413e-b162-bd031fe0407e";
+var appcode = "9c993b36ecc94bcda0e143e81df93425";
+var bdorcapi = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+var appId = "10672778";
+var apiKey = "QMC9Tp8ww8yjHDXI258uVOlM";
+var secretKey = "LOko3wu9ZbVXMUyribzxGkivkIf6SbMR";
+var token_url = "https://aip.baidubce.com/oauth/2.0/token";
+var bd_token = "";
+var now = tonumber(time.now());
+
+
+//api获取token
+var to_auth = function(){
+	var apiClient = web.rest.client();
+	var params = {
+		grant_type = "client_credentials";
+		client_id = apiKey;
+		client_secret = secretKey;
+	}
+	var json = apiClient.get(token_url,params);
+	var resp = web.json.parse(json);
+	resp.expires_in = now + resp.expires_in;
+	bd_token = resp.access_token;
+	var keyfile = fsys.file(keypath,"w+");
+	json = web.json.stringify(resp);
+	keyfile.write(json);
+	keyfile.close();
+	console.dump(resp);
+}
+
+
+//处理过期token
+var get_auth = function(){
+    if(!fsys.searchFile(keypath))
+	{
+		to_auth();
+    }else {
+        var keyfile = fsys.file(keypath,"r+");
+        var json = keyfile.readAll();
+        var resp = web.json.parse(json);
+    	if(resp.expires_in == null || now > resp.expires_in){
+    		to_auth();
+    	}else {
+    		bd_token = resp.access_token;
+    	}
+    	
+    	keyfile.close();
+    }
+}
+
+
+
+
+//安卓截屏
+var jieping = function(){
+    fsys.delete(imgpath);
+    process.adb("shell rm /sdcard/screenshot.png" );
+    sleep(100);
+	process.adb("shell /system/bin/screencap -p /sdcard/screenshot.png" );
+	//process.adb.pull( "/sdcard/screenshot.png",imgpath ) 
+	while(true){ 
+		if(fsys.searchFile(imgpath))
+		{
+			var files = fsys.file(imgpath);
+			var file_size = files.size();
+			//console.log(file_size);
+			if(file_size>0)
+			{
+				files.close();
+				break ;
+			}
+		}
+		process.adb.pull( "/sdcard/screenshot.png",imgpath )
+		sleep(100); 
+	}
+	
+	//console.log("截屏成功")
+}
+
+//截屏裁剪
+var caijian = function(){
+	//80 250 550
+	var bitmap = gdip.bitmap(imgpath );
+	var bitmagNew = gdip.bitmap(920,400);
+	var graphics = bitmagNew.getGraphics();
+	graphics.drawImageRectRect(bitmap,0,0,920,400,80,250,920,400)
+	bitmagNew.save("C:\screenshot\screenshot_block.png")
+	//console.log("截取问题成功")
+	
+}
+
+//百度免费每天500orc识别
+var bdorc = function(){
+	var apiClient = web.rest.client();
+	var headers  ={
+		['Content-Type'] = "application/json; charset=UTF-8";
+		['Content-Type'] = "application/x-www-form-urlencoded";
+	}
+	var streams = fsys.stream("C:\screenshot\screenshot_block.png","r+");
+	var content = streams.readAll();
+	var params = {
+		access_token = bd_token;
+		image = crypt.bin.encodeBase64(content);
+	}
+	var json = apiClient.post(bdorcapi,params);
+	var resp = web.json.parse(json);
+	//console.log(json);
+	var question = "";
+	if(resp.words_result==null)
+	{
+		console.log("识别失败："+resp.result);
+		return null; 
+	}
+	for(key,val in resp.words_result){
+		question = question+""+val.words
+	}
+	console.log(question);
+	return question; 
+}
+
+
+
+//orc识别
+var orcshibie = function(){
+	var apiClient = web.rest.client();
+	var headers  ={
+		['Content-Type'] = "application/json; charset=UTF-8";
+		['Content-Type'] = "application/octet-stream";
+		['Authorization'] = "APPCODE " + appcode;
+	}
+	apiClient.addHeaders = headers;
+	var streams = fsys.stream("C:\screenshot\screenshot_block.png","r+");
+	var content = streams.readAll();
+	var params = {
+		uid = "118.12.0.12";
+		color = "color";
+		lang = "chns";
+		image = crypt.bin.encodeBase64(content);
+	}
+	
+	var json = apiClient.post(api,web.json.stringify(params,true));
+	var resp = web.json.parse(json);
+	//console.dump(resp);
+	
+	if(resp.code == "0"){
+		var question = resp.textResult;
+		question = string.replace(question,"\r","");
+		question = string.replace(question,"\n","");
+		question = string.replace(question," ","");
+		console.log(question);
+		return question; 
+	}else {
+		console.log("识别失败："+resp.result)
+		return null; 
+	}
+	
+
+}
+var search = function(question){
+
+	//console.log(question);
+	question = inet.url.encode(question)
+	html = web.mshtml();
+	html.document.designMode = "on";
+	url = "https://www.baidu.com/s?wd="+question;
+	html.go(url);
+	qEle = html.queryEles(className = "c-abstract");
+	console.log("以下可能的答案：")
+	i = 0
+	for(key,val in qEle){
+		if(i>3)
+			break ;
+		console.log(" ")
+		console.log(val.innerText);
+		i++;
+	}
+} 
+
+get_auth();//获取百度token
+fsys.createDir("c:/screenshot/");
+process.adb.killServer();
+//process.adb.startServer();
+if( process.adb.getState() != "device" ){
+		console.log("请选连接安卓手机,并打开设置->开发者选项->USB调试模式" )
+}
+console.log("设备串号",process.adb.getSerialno() )
+console.log("按回车键开始识别问题..." );
+while(true){ 
+	if( console.kbHit() ){
+		var kb = console.kbRead();
+		if(!kb) continue;
+		if( kb.wVirtualKeyCode == 0x1B/*_VK_ESC*/ ){
+			process.adb.killServer();
+			break;
+		}
+		if(kb.bKeyDown==1)
+		{
+			jieping();
+			caijian();
+			//var question = orcshibie();
+			//var question = '岁寒三友有哪些？';
+			var question = bdorc();
+			if(!question){
+				continue ;
+			}	
+			search(question);
+			console.log(" ")
+			console.log("按回车键开始识别下一道题..." );
+		}
+		 
+	}
+}
+
