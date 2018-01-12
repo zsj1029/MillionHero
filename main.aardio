@@ -144,6 +144,8 @@ var bdorc = function(){
 			{
 				question = question+""+val.words
 			}else {
+				val.words = string.replace(val.words,"《","");
+				val.words = string.replace(val.words,"》","");
 				table.push(answer,val.words);
 			}
 		}else {
@@ -151,6 +153,8 @@ var bdorc = function(){
 			{
 				question = question+""+val.words
 			}else {
+				val.words = string.replace(val.words,"《","");
+				val.words = string.replace(val.words,"》","");
 				table.push(answer,val.words);
 			}
 		}
@@ -158,10 +162,12 @@ var bdorc = function(){
 	}
 	console.log(question);
 	//除去序号1.2.3.
-	for( i =1;12;1){
-		question = string.replace(question,string.concat(i,"."),"");
-	}
-	//console.dump(answer);
+
+	//question = string.replace(question,"/^\d{1,}./","");
+	//for( i =12;1;-1){
+	//	question = string.replace(question,string.concat(i,"."),"");
+	//}
+	//console.log(question);
 	var obj = {
 		question = question;
 		answer = answer;
@@ -239,15 +245,16 @@ var search = function(obj){
 	answer = obj.answer
 	console.log("");
 	//console.dump(string.find(question,"不是"));
-	if(string.find(question,"不是")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
+	if(string.find(question,"不是")||string.find(question,"不正确")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
 	{
 		console.log("*此题可能是否定题，建议选统计次数最少的答案*");
 	}else {
 		console.log("*建议选统计次数最多的答案*");
 	}
 	
-	
+	//console.log(question);
 	questions = inet.url.encode(question)
+	
 	html = web.mshtml();
 	html.document.designMode = "on";
 	url = "https://www.baidu.com/s?wd="+questions;
@@ -267,7 +274,7 @@ var search = function(obj){
 	//多线程搜索问题+答案 结果记录数
 	console.log("--------------------------------------------------------------------------");
 	console.log("统计问题+答案的搜索条数：")
-	manage = thread.manage(5)
+	manage = thread.manage(10)
 	for(key,val in answer){
 		
 		manage.create(search_thread,question,val);
