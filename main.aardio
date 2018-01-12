@@ -160,16 +160,20 @@ var bdorc = function(){
 		}
 		i++;
 	}
-	console.log(question);
+	//console.log(question);
 	//除去序号1.2.3.
 
 	//question = string.replace(question,"/^\d{1,}./","");
-	//for( i =12;1;-1){
-	//	question = string.replace(question,string.concat(i,"."),"");
-	//}
+	questions = question;
+	for( i =12;1;-1){
+		//console.log(i);
+		if(questions!=question)
+			break ;
+		questions = string.replace(question,i,"");
+	}
 	//console.log(question);
 	var obj = {
-		question = question;
+		question = questions;
 		answer = answer;
 	}
 	return obj; 
@@ -241,10 +245,10 @@ var search_thread = function(question,answer){
 
 var search = function(obj){
 	question = string.replace(obj.question,"?","");
-	question = string.replace(question,"？","");
+	
 	answer = obj.answer
 	console.log("--------------------------------------------------------------------------");
-	//console.dump(string.find(question,"不是"));
+
 	if(string.find(question,"不是")||string.find(question,"不正确")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
 	{
 		console.log("*此题可能是否定题，建议选统计次数最少的答案*");
@@ -252,7 +256,7 @@ var search = function(obj){
 		console.log("*建议选统计次数最多的答案*");
 	}
 	
-	//console.log(question);
+	console.log(question);
 	questions = inet.url.encode(question)
 	
 	html = web.mshtml();
