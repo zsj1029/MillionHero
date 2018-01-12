@@ -15,6 +15,10 @@ import web.mshtml;
 import time.ole;
 import inet.url;
 import string.html;
+import thread.event;
+import thread.command;
+import thread.manage;
+import time.performance;
 
 console.setTitle("MillionDollar");
 var imgpath = "C:\screenshot\screenshot.png";
@@ -63,7 +67,6 @@ var get_auth = function(){
     	}else {
     		bd_token = resp.access_token;
     	}
-    	
     	keyfile.close();
     }
 }
@@ -201,11 +204,38 @@ var orcshibie = function(){
 		console.log("识别失败："+resp.result)
 		return null; 
 	}
+}
+
+//多线程请求搜索
+var search_thread = function(question,answer){
+    import inet.url;
+    import thread.event;
+	import console;
+	import web.mshtml;
+	import string.html;
+	//console.log(question+" "+answer);
 	
+	var words = string.concat(question," ",answer);
+	words = inet.url.encode(words)
+	html = web.mshtml();
+	html.document.designMode = "on";
+	url = "https://www.baidu.com/s?wd="+words;
+	html.go(url);
+	qEle = html.queryEles(className = "num");
+	var content = qEle[1].innerText;
+	var pos1 = string.indexAny(content,"约");
+	substr = string.sub(content,pos1);
+	substr = string.replace(substr,"约","");
+	substr = string.replace(substr,"个","");
+	substr = string.replace(substr,",","");
+	console.log(answer+"： "+substr/10000+"万");
+	//console.dump(pos2);
 
 }
+
 var search = function(obj){
-	question = obj.question;
+	question = string.replace(obj.question,"?","");
+	question = string.replace(question,"？","");
 	answer = obj.answer
 	console.log("");
 	//console.dump(string.find(question,"不是"));
@@ -217,32 +247,40 @@ var search = function(obj){
 	}
 	
 	
-	question = inet.url.encode(question)
+	questions = inet.url.encode(question)
 	html = web.mshtml();
 	html.document.designMode = "on";
-	url = "https://www.baidu.com/s?wd="+question;
+	url = "https://www.baidu.com/s?wd="+questions;
 	html.go(url);
 	var content = html.html;
 	content = string.html.toText(content);
-	//console.log(content);
-	//qEle = html.queryEles(className = "c-abstract");
-	//console.log("");
-	//console.log(qEle[1].innerText);
-	console.log("");
+	console.log("--------------------------------------------------------------------------");
 	console.log("统计答案出现次数：")
-	console.log("");
 
 	for(key,val in answer){
 		//console.log(val);
 		strlist = string.split(content,string.concat("<",val,">"));
 		console.log(string.concat(val," ",(#strlist-1),"个"));
 	}
+	
+
+	//多线程搜索问题+答案 结果记录数
+	console.log("--------------------------------------------------------------------------");
+	console.log("统计问题+答案的搜索条数：")
+	manage = thread.manage(5)
+	for(key,val in answer){
+		
+		manage.create(search_thread,question,val);
+		//thread.create(search_thread,question,val);
+	}
+	manage.waitClose();
 	qEle = html.queryEles(className = "c-abstract");
-	console.log("");
+	console.log("--------------------------------------------------------------------------");
 	console.log("搜索返回：");
 	console.log(qEle[1].innerText);
-	
 } 
+
+
 
 
 var init = function(){
@@ -278,6 +316,7 @@ while(true){
 		}
 		if(kb.bKeyDown==1)
 		{
+			var time1 = time.performance.tick();
 			jieping();
 			caijian();
 			//var question = orcshibie();
@@ -287,7 +326,10 @@ while(true){
 				continue ;
 			}	
 			search(question);
-			console.log(" ")
+			var time2 = time.performance.tick();
+			console.log("--------------------------------------------------------------------------");
+			console.log("处理时间："+(time2-time1)/1000+"秒");
+			console.log("");
 			console.log("按回车键开始识别下一道题..." );
 		}
 		 
