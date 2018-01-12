@@ -12,7 +12,7 @@
 ![1.png](res/3.png)
 
 - QQ吃鸡交流群
-![qun.png](<img width="300px" src="res/qun.png"/>)
+![qun.png](<img width=300 src="res/qun.png"/>)
 
 > 本程序参考了一下，最近比较火的跳一跳的原理
 1. 安卓手机调试模式
