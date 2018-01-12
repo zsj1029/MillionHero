@@ -11,7 +11,7 @@
 
 ![1.png](res/3.png)
 
-- 微信群
+- QQ吃鸡交流群
 
 ![1.png](res/qun.png)
 
