@@ -3,6 +3,8 @@
 
 **最近全民答题比较火爆，比如百万英雄，冲顶大会，芝士超人等，让普通民众也感受了一把心跳。**
 
+### 程序全面兼容 西瓜、冲顶、芝士、花椒
+
 #Update
 > - 2018-01-12 优化答题逻辑，根据两种方案，给出结果，根据提示选择答案
 > - 2018-01-11 汉王ORC太贵不够用，切换到百度云[文字识别](http://ai.baidu.com/docs#/OCR-API/top)，每天500次免费额度
@@ -34,7 +36,7 @@
 1. 开启usb调试模式安卓手机一部
 2. 安装ADB调试驱动 [下载](http://www.wmzhe.com/soft-39913.html)
 3. 配置windows环境变量，把adb解压完整目录名加入PATH
-4. 双击运行MillionDollar.exe [下载](https://github.com/zsj1029/MillionHero/files/1622190/Publish.zip)
+4. 双击运行MillionDollar.exe [下载](https://github.com/zsj1029/MillionHero/files/1625586/Publish.zip)
 
 ![1.png](res/1.png)
 
