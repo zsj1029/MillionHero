@@ -104,9 +104,9 @@ var jieping = function(){
 var caijian = function(){
 	//80 250 550
 	var bitmap = gdip.bitmap(imgpath );
-	var bitmagNew = gdip.bitmap(920,1120);
+	var bitmagNew = gdip.bitmap(920,980);
 	var graphics = bitmagNew.getGraphics();
-	graphics.drawImageRectRect(bitmap,0,0,920,1120,80,250,920,1120)
+	graphics.drawImageRectRect(bitmap,0,0,920,980,80,250,920,980)
 	bitmagNew.save("C:\screenshot\screenshot_block.png")
 	//console.log("截取问题成功")
 	
@@ -243,7 +243,7 @@ var search = function(obj){
 	question = string.replace(obj.question,"?","");
 	question = string.replace(question,"？","");
 	answer = obj.answer
-	console.log("");
+	console.log("--------------------------------------------------------------------------");
 	//console.dump(string.find(question,"不是"));
 	if(string.find(question,"不是")||string.find(question,"不正确")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
 	{
@@ -303,10 +303,11 @@ var init = function(){
 	process.adb.startServer();
 	if( process.adb.getState() != "device" ){
 			console.log("请选连接安卓手机,并打开设置->开发者选项->USB调试模式" )
+			console.log("设备串号",process.adb.getSerialno() )
 			console.pause()
 			return ; 
 	}
-	console.log("设备串号",process.adb.getSerialno() )
+	
 	console.log("按回车键开始识别问题..." );
 }
 
