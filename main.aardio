@@ -1,5 +1,4 @@
 import console;
-import key;
 import process;
 import process.popen;
 import process.adb;
@@ -12,20 +11,19 @@ import web.rest.client;
 import crypt.bin; 
 import string.xml;
 import web.mshtml;
-import time.ole;
 import inet.url;
 import string.html;
 import thread.event;
-import thread.command;
 import thread.manage;
 import time.performance;
 
-console.setTitle("MillionDollar");
+console.setTitle("答题辅助工具");
 var imgpath = "C:\screenshot\screenshot.png";
 var keypath = "C:\screenshot\token.txt";
 var api = "http://text.aliapi.hanvon.com/rt/ws/v1/ocr/text/recg?code=74e51a88-41ec-413e-b162-bd031fe0407e";
 var appcode = "xxxxx";
 var bdorcapi = "https://aip.baidubce.com/rest/2.0/ocr/v1/general_basic";
+var bdhighorcapi = 'https://aip.baidubce.com/rest/2.0/ocr/v1/accurate_basic'
 var apiKey = "QMC9Tp8ww8yjHDXI258uVOlM";
 var secretKey = "LOko3wu9ZbVXMUyribzxGkivkIf6SbMR";
 var token_url = "https://aip.baidubce.com/oauth/2.0/token";
@@ -75,10 +73,11 @@ var get_auth = function(){
 
 
 //安卓截屏
-var jieping = function(){
+var jieping = function(time){
+    imgpath = "C:\screenshot\screenshot"+time+".png"
     fsys.delete(imgpath);
     process.adb("shell rm /sdcard/screenshot.png" );
-    sleep(100);
+    sleep(50);
 	process.adb("shell /system/bin/screencap -p /sdcard/screenshot.png" );
 	//process.adb.pull( "/sdcard/screenshot.png",imgpath ) 
 	while(true){ 
@@ -94,22 +93,17 @@ var jieping = function(){
 			}
 		}
 		process.adb.pull( "/sdcard/screenshot.png",imgpath )
-		sleep(100); 
+		sleep(20);
 	}
-	
-	//console.log("截屏成功")
 }
 
 //截屏裁剪
 var caijian = function(){
-	//80 250 550
-	var bitmap = gdip.bitmap(imgpath );
+	var bitmap = gdip.bitmap(imgpath);
 	var bitmagNew = gdip.bitmap(920,980);
 	var graphics = bitmagNew.getGraphics();
 	graphics.drawImageRectRect(bitmap,0,0,920,980,80,300,920,980)
 	bitmagNew.save("C:\screenshot\screenshot_block.png")
-	//console.log("截取问题成功")
-	
 }
 
 //百度免费每天500orc识别
@@ -135,43 +129,34 @@ var bdorc = function(){
 		console.log("识别失败："+resp.result);
 		return null; 
 	}
-	var i = 1;
+
 	var num = resp.words_result_num;
+	var find_ques = false;
 	for(key,val in resp.words_result){
-		if(num>4)
+		
+		if(!find_ques)
 		{
-			if(i<=2)
+			question = question+""+val.words;
+			if(string.find(val.words,"?"))//如果找到问号，问题截取ok
 			{
-				question = question+""+val.words
-			}else {
-				val.words = string.replace(val.words,"《","");
-				val.words = string.replace(val.words,"》","");
-				table.push(answer,val.words);
+				find_ques = true;
 			}
 		}else {
-			if(i==1)
-			{
-				question = question+""+val.words
-			}else {
-				val.words = string.replace(val.words,"《","");
-				val.words = string.replace(val.words,"》","");
-				table.push(answer,val.words);
-			}
+			val.words = string.replace(val.words,"《","");
+			val.words = string.replace(val.words,"》","");
+			table.push(answer,val.words);
 		}
-		i++;
 	}
-	//console.log(question);
+	
+	console.log(question);
 	//除去序号1.2.3.
-
-	//question = string.replace(question,"/^\d{1,}./","");
 	questions = question;
 	for( i =12;1;-1){
-		//console.log(i);
 		if(questions!=question)
 			break ;
 		questions = string.replace(question,i,"");
 	}
-	//console.log(question);
+	
 	var obj = {
 		question = questions;
 		answer = answer;
@@ -238,34 +223,48 @@ var search_thread = function(question,answer){
 	substr = string.replace(substr,"约","");
 	substr = string.replace(substr,"个","");
 	substr = string.replace(substr,",","");
-	console.log(answer+"： "+substr/10000+"万");
+	console.log(answer+"： "+substr/1000+"千");
 	//console.dump(pos2);
 
 }
 
 var search = function(obj){
+    //console.dump(obj);
+    //console.log(obj.question);
 	question = string.replace(obj.question,"?","");
-	
 	answer = obj.answer
-	console.log("--------------------------------------------------------------------------");
-
-	if(string.find(question,"不是")||string.find(question,"不正确")||string.find(question,"不含")||string.find(question,"不包")||string.find(question,"不属")||string.find(question,"不在")||string.find(question,"没有"))
-	{
-		console.log("*此题可能是否定题，建议选统计次数最少的答案*");
-	}else {
-		console.log("*建议选统计次数最多的答案*");
-	}
 	
-	console.log(question);
 	questions = inet.url.encode(question)
 	
 	html = web.mshtml();
 	html.document.designMode = "on";
 	url = "https://www.baidu.com/s?wd="+questions;
 	html.go(url);
+	
+	qEle = html.queryEles(className = "c-abstract");
+	console.log("--------------------------------------------------------------------------");
+	console.log("搜索返回：");
+	for(key,val in qEle){
+		if(string.find(val.innerText,"最佳答案")){
+			
+			console.log(val.innerText);
+			console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		}
+	}
+
+	if(string.find(question,"不是")||string.find(question,"不正确")
+	||string.find(question,"不含")||string.find(question,"不包")
+	||string.find(question,"不属")||string.find(question,"不在")
+	||string.find(question,"没有")||string.find(question,"不可能"))
+	{
+		console.log("*此题可能是否定题，建议选统计次数最少的答案*");
+	}else {
+		console.log("*建议选统计次数最多的答案*");
+	}
+	console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	
 	var content = html.html;
 	content = string.html.toText(content);
-	console.log("--------------------------------------------------------------------------");
 	console.log("统计答案出现次数：")
 
 	for(key,val in answer){
@@ -282,14 +281,9 @@ var search = function(obj){
 	for(key,val in answer){
 		
 		manage.create(search_thread,question,val);
-		//thread.create(search_thread,question,val);
 	}
 	manage.waitClose();
-	qEle = html.queryEles(className = "c-abstract");
-	console.log("--------------------------------------------------------------------------");
-	console.log("搜索返回：");
-	if(qEle[1])
-		console.log(qEle[1].innerText);
+
 } 
 
 
@@ -319,6 +313,7 @@ var init = function(){
 
 init();
 
+var times = 1;
 while(true){ 
 	if( console.kbHit() ){
 		var kb = console.kbRead();
@@ -329,8 +324,10 @@ while(true){
 		}
 		if(kb.bKeyDown==1)
 		{
+			console.clearScreen();
 			var time1 = time.performance.tick();
-			jieping();
+			jieping(times);
+			times++;
 			caijian();
 			//var question = orcshibie();
 			//var question = '岁寒三友有哪些？';
@@ -344,6 +341,7 @@ while(true){
 			console.log("处理时间："+(time2-time1)/1000+"秒");
 			console.log("");
 			console.log("按回车键开始识别下一道题..." );
+			process.adb("shell rm /sdcard/screenshot.png" );
 		}
 		 
 	}
