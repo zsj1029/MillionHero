@@ -99,10 +99,11 @@ var jieping = function(time){
 
 //截屏裁剪
 var caijian = function(){
+    //980
 	var bitmap = gdip.bitmap(imgpath);
-	var bitmagNew = gdip.bitmap(920,980);
+	var bitmagNew = gdip.bitmap(920,920);
 	var graphics = bitmagNew.getGraphics();
-	graphics.drawImageRectRect(bitmap,0,0,920,980,80,300,920,980)
+	graphics.drawImageRectRect(bitmap,0,0,920,920,80,300,920,920)
 	bitmagNew.save("C:\screenshot\screenshot_block.png")
 }
 
@@ -150,12 +151,15 @@ var bdorc = function(){
 	
 	console.log(question);
 	//除去序号1.2.3.
-	questions = question;
+	questions = string.replace(question,"^\d+[.]*","");
+	questions = string.replace(questions,"?","");
+	//console.log(questions);
+	/**
 	for( i =12;1;-1){
 		if(questions!=question)
 			break ;
 		questions = string.replace(question,i,"");
-	}
+	}**/
 	
 	var obj = {
 		question = questions;
@@ -216,7 +220,7 @@ var search_thread = function(question,answer){
 	html.document.designMode = "on";
 	url = "https://www.baidu.com/s?wd="+words;
 	html.go(url);
-	qEle = html.queryEles(className = "num");
+	qEle = html.queryEles(className = "nums");
 	var content = qEle[1].innerText;
 	var pos1 = string.indexAny(content,"约");
 	substr = string.sub(content,pos1);
@@ -231,7 +235,7 @@ var search_thread = function(question,answer){
 var search = function(obj){
     //console.dump(obj);
     //console.log(obj.question);
-	question = string.replace(obj.question,"?","");
+	question = obj.question;
 	answer = obj.answer
 	
 	questions = inet.url.encode(question)
@@ -246,7 +250,6 @@ var search = function(obj){
 	console.log("搜索返回：");
 	for(key,val in qEle){
 		if(string.find(val.innerText,"最佳答案")){
-			
 			console.log(val.innerText);
 			console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 		}
