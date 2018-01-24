@@ -8,7 +8,7 @@
 > - ~~TODO IOS版~~
 
 #Update
-> - 2018-01-24 更新IOS版，省去安卓截屏时间，更加有效率，平均不足3秒 传送门[链接](https://github.com/zsj1029/MillionHero)
+> - 2018-01-24 更新IOS版，省去安卓截屏时间，更加有效率，平均不足3秒 [传送门](https://github.com/zsj1029/MillionHero)
 > - 2018-01-12 优化答题逻辑，根据两种方案，给出结果，根据提示选择答案
 > - 2018-01-11 汉王ORC太贵不够用，切换到百度云[文字识别](http://ai.baidu.com/docs#/OCR-API/top)，每天500次免费额度
 > - 2018-01-10 ORC采用阿里云汉王文字识别
